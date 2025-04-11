@@ -36,9 +36,6 @@ export const locationImageMap: Record<string, string[]> = {
   Restaurant: ["restaurant dining", "restaurant interior"],
   Cafe: ["cafe coffee shop", "cafe bakery"],
   Beach: ["beach ocean view", "beach coastline"],
-  Pub: ["pub interior", "pub building exterior"],
-  Bar: ["bar interior", "cocktail bar"],
-  Brewery: ["brewery taproom", "craft beer brewery"],
 }
 
 // Generate alternative search terms for a place
@@ -165,6 +162,9 @@ export function cacheImage(query: string, url: string): void {
     timestamp: Date.now(),
   }
 }
+
+// Cache for image search results to reduce API calls
+// const imageCache: Record<string, string> = {}
 
 // Find an image for an activity with multiple fallback options
 export async function findImageForActivity(
@@ -344,9 +344,6 @@ function inferActivityType(title: string, location: string): string {
   if (/theater|theatre|cinema|movie|show|performance|concert/.test(combinedText)) {
     return "entertainment"
   }
-  if (/pub|bar|tavern|brewery|taproom|alehouse|beer/.test(combinedText)) {
-    return "pub"
-  }
 
   return "attraction"
 }
@@ -393,235 +390,4 @@ export async function searchGoogleImages(query: string): Promise<string | null> 
     console.error("Error in searchGoogleImages:", error)
     return null
   }
-}
-
-/**
- * Extract domain from a URL
- */
-function extractDomain(url: string): string | null {
-  try {
-    if (!url) return null
-
-    // Clean up the URL
-    url = url.trim().toLowerCase()
-
-    // Add protocol if missing
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      url = "https://" + url
-    }
-
-    // Parse the URL
-    const urlObj = new URL(url)
-    return urlObj.hostname
-  } catch (error) {
-    console.error("Error extracting domain:", error)
-    return null
-  }
-}
-
-/**
- * Check if an image URL is valid and accessible with timeout
- */
-async function isImageAccessible(url: string): Promise<boolean> {
-  try {
-    // Create an AbortController with a timeout
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 second timeout
-
-    const response = await fetch(url, {
-      method: "HEAD",
-      signal: controller.signal,
-    })
-
-    clearTimeout(timeoutId)
-
-    return response.ok && response.headers.get("content-type")?.startsWith("image/")
-  } catch (error) {
-    console.error(`Image accessibility check failed for ${url}:`, error)
-    return false
-  }
-}
-
-/**
- * Get favicon for a website with better error handling
- */
-async function getFavicon(domain: string): Promise<string | null> {
-  if (!domain) return null
-
-  try {
-    console.log(`Attempting to get favicon for domain: ${domain}`)
-    const faviconUrl = `https://www.google.com/s2/favicons?sz=128&domain=${domain}`
-
-    if (await isImageAccessible(faviconUrl)) {
-      console.log(`Successfully found favicon for ${domain}`)
-      return faviconUrl
-    }
-
-    console.log(`No favicon found for ${domain}`)
-    return null
-  } catch (error) {
-    console.error(`Error getting favicon for ${domain}:`, error)
-    return null
-  }
-}
-
-/**
- * Get Apple Touch icon for a website with better error handling
- */
-async function getAppleTouchIcon(domain: string): Promise<string | null> {
-  if (!domain) return null
-
-  try {
-    console.log(`Attempting to get Apple Touch icon for domain: ${domain}`)
-
-    // Try common paths for Apple Touch icons
-    const touchIconPaths = [
-      `/apple-touch-icon.png`,
-      `/apple-touch-icon-precomposed.png`,
-      `/apple-touch-icon-180x180.png`,
-      `/apple-touch-icon-152x152.png`,
-      `/apple-touch-icon-120x120.png`,
-      `/apple-touch-icon-76x76.png`,
-      `/apple-touch-icon-60x60.png`,
-    ]
-
-    for (const path of touchIconPaths) {
-      const touchIconUrl = `https://${domain}${path}`
-      if (await isImageAccessible(touchIconUrl)) {
-        console.log(`Successfully found Apple Touch icon at ${touchIconUrl}`)
-        return touchIconUrl
-      }
-    }
-
-    console.log(`No Apple Touch icon found for ${domain}`)
-    return null
-  } catch (error) {
-    console.error(`Error getting Apple Touch icon for ${domain}:`, error)
-    return null
-  }
-}
-
-/**
- * Generate pub-specific search terms that are more likely to return relevant images
- */
-function generatePubSearchQueries(pubName: string, location: string): string[] {
-  const queries = []
-  const cleanPubName = cleanSearchTerm(pubName)
-  const cleanLocation = cleanSearchTerm(location)
-
-  // Most specific queries first
-  queries.push(`${cleanPubName} pub ${cleanLocation} exterior`)
-  queries.push(`${cleanPubName} pub ${cleanLocation}`)
-  queries.push(`${cleanPubName} bar ${cleanLocation}`)
-
-  // Add pub type variations
-  if (!/pub|bar|tavern|brewery/.test(cleanPubName.toLowerCase())) {
-    queries.push(`${cleanPubName} pub exterior`)
-    queries.push(`${cleanPubName} bar exterior`)
-    queries.push(`${cleanPubName} tavern exterior`)
-  }
-
-  // Add location context
-  queries.push(`pub in ${cleanLocation}`)
-  queries.push(`traditional pub ${cleanLocation}`)
-
-  // Generic fallbacks
-  queries.push(`${cleanLocation} pub scene`)
-  queries.push(`traditional pub exterior`)
-
-  return queries.filter(Boolean)
-}
-
-/**
- * Find an image for a pub with enhanced fallback logic
- * This is specifically for the pub crawl feature
- */
-export async function findImageForPub(
-  pubName: string,
-  location: string,
-  website?: string,
-  existingImageUrl?: string,
-): Promise<string> {
-  console.log(`Finding image for pub: ${pubName} in ${location}`)
-
-  // Cache key for this specific pub
-  const cacheKey = `pub_${pubName}_${location}`
-  const cachedResult = getCachedImage(cacheKey)
-  if (cachedResult) {
-    console.log(`Using cached image for pub: ${pubName}`)
-    return cachedResult
-  }
-
-  // If we already have a valid image URL, use it
-  if (
-    existingImageUrl &&
-    typeof existingImageUrl === "string" &&
-    existingImageUrl.startsWith("http") &&
-    !existingImageUrl.includes("placeholder")
-  ) {
-    console.log(`Using existing image URL for pub: ${pubName}`)
-    cacheImage(cacheKey, existingImageUrl)
-    return existingImageUrl
-  }
-
-  // Step 1: Try to find an image using pub-specific search queries
-  const searchQueries = generatePubSearchQueries(pubName, location)
-  console.log(`Generated search queries for ${pubName}:`, searchQueries)
-
-  for (const query of searchQueries) {
-    try {
-      console.log(`Searching for image with query: "${query}"`)
-      const imageUrl = await searchForImage(query)
-      if (imageUrl) {
-        console.log(`Found image for pub ${pubName} with query "${query}": ${imageUrl}`)
-        cacheImage(cacheKey, imageUrl)
-        return imageUrl
-      }
-    } catch (error) {
-      console.error(`Error searching for image with query "${query}":`, error)
-    }
-  }
-
-  // Step 2: If website is provided, try to get favicon or Apple Touch icon
-  if (website) {
-    console.log(`Trying to get logo from website: ${website}`)
-    const domain = extractDomain(website)
-
-    if (domain) {
-      console.log(`Extracted domain: ${domain}`)
-
-      // Try Google's favicon service
-      try {
-        const faviconUrl = await getFavicon(domain)
-        if (faviconUrl) {
-          console.log(`Found favicon for ${pubName}: ${faviconUrl}`)
-          cacheImage(cacheKey, faviconUrl)
-          return faviconUrl
-        }
-      } catch (error) {
-        console.error(`Error getting favicon for ${domain}:`, error)
-      }
-
-      // Try Apple Touch icon
-      try {
-        const touchIconUrl = await getAppleTouchIcon(domain)
-        if (touchIconUrl) {
-          console.log(`Found Apple Touch icon for ${pubName}: ${touchIconUrl}`)
-          cacheImage(cacheKey, touchIconUrl)
-          return touchIconUrl
-        }
-      } catch (error) {
-        console.error(`Error getting Apple Touch icon for ${domain}:`, error)
-      }
-    } else {
-      console.log(`Could not extract domain from website: ${website}`)
-    }
-  } else {
-    console.log(`No website provided for pub: ${pubName}`)
-  }
-
-  // Step 3: Final fallback to placeholder
-  console.log(`Using placeholder for pub: ${pubName}`)
-  const placeholderUrl = `/placeholder.svg?height=300&width=400&text=${encodeURIComponent(pubName || "Pub")}`
-  return placeholderUrl
 }

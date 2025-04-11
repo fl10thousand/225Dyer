@@ -1,5 +1,5 @@
 import type { PubCrawlPreferences, PubCrawlPlan, PubStop } from "./pub-crawl-types"
-import { findImageForPub } from "./image-search"
+import { searchForImage } from "./image-search"
 
 // Helper function to clean markdown code blocks from text
 function cleanMarkdownCodeBlocks(text: string): string {
@@ -106,44 +106,24 @@ export async function generatePubCrawl(preferences: PubCrawlPreferences): Promis
 
 // Function to enhance the pub crawl with images if they're missing
 async function enhancePubCrawlWithImages(plan: PubCrawlPlan): Promise<PubCrawlPlan> {
-  console.log("Enhancing pub crawl with images...")
-
-  // Process stops in parallel with a limit to avoid overwhelming the API
   const enhancedStops = await Promise.all(
-    plan.stops.map(async (stop, index) => {
-      console.log(`Processing stop ${index + 1}/${plan.stops.length}: ${stop.name}`)
-
-      // Delay each request slightly to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, index * 200))
-
+    plan.stops.map(async (stop) => {
       if (!stop.imageUrl || stop.imageUrl.includes("placeholder")) {
         try {
-          // Use the improved findImageForPub function
-          console.log(`Finding image for: ${stop.name} in ${plan.location}`)
-          const imageUrl = await findImageForPub(stop.name, plan.location, stop.website, stop.imageUrl)
-
-          if (imageUrl && !imageUrl.includes("placeholder")) {
-            console.log(`Found image for ${stop.name}: ${imageUrl}`)
+          const searchQuery = `${stop.name} pub ${plan.location}`
+          const imageUrl = await searchForImage(searchQuery)
+          if (imageUrl) {
             return { ...stop, imageUrl }
-          } else {
-            console.log(`No image found for ${stop.name}, using placeholder`)
           }
         } catch (error) {
           console.error(`Error fetching image for ${stop.name}:`, error)
         }
-      } else {
-        console.log(`Using existing image for ${stop.name}: ${stop.imageUrl}`)
       }
-
       return stop
     }),
   )
 
-  console.log("Finished enhancing pub crawl with images")
-  return {
-    ...plan,
-    stops: enhancedStops,
-  }
+  return { ...plan, stops: enhancedStops }
 }
 
 // Create a fallback pub crawl for when the API call fails
@@ -157,11 +137,6 @@ function createFallbackPubCrawl(preferences: PubCrawlPreferences): PubCrawlPlan 
   // Create generic pub stops
   const stops: PubStop[] = Array.from({ length: pubCount }).map((_, index) => {
     const pubNumber = index + 1
-    const pubName = `${location} Pub #${pubNumber}`
-
-    // Create a fictional website URL based on the pub name
-    const websiteName = pubName.toLowerCase().replace(/[^a-z0-9]/g, "")
-    const website = `https://www.${websiteName}.com`
 
     // Generate beer recommendation based on preference
     let recommendedBeer = "Local Draft Beer"
@@ -209,15 +184,14 @@ function createFallbackPubCrawl(preferences: PubCrawlPreferences): PubCrawlPlan 
     }
 
     return {
-      name: pubName,
+      name: `${location} Pub #${pubNumber}`,
       address: `${location} City Center`,
       description: `A popular pub in ${location}.`,
-      website,
       mapLink: `https://www.google.com/maps/search/?api=1&query=pubs+in+${encodeURIComponent(location)}`,
       recommendedBeer,
       beerDescription,
       type: "pub",
-      imageUrl: `/placeholder.svg?height=300&width=400&text=${encodeURIComponent(pubName)}`,
+      imageUrl: `/placeholder.svg?height=300&width=400`,
     }
   })
 

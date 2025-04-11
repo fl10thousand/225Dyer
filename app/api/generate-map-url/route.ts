@@ -59,13 +59,13 @@ function generateDirectionsMapUrl(stops: PubStop[], apiKey: string): string {
 // Function to generate a map with pins for each location
 function generatePinsMapUrl(stops: PubStop[], apiKey: string): string {
   // Base URL for Google Maps embed
-  const baseUrl = "https://www.google.com/maps/embed/v1/place"
+  const baseUrl = "https://www.google.com/maps/embed/v1/view"
 
-  // Get the first stop's address as a fallback center
-  const firstStopAddress = stops[0]?.address || ""
+  // Calculate center point (average of all locations)
+  const center = calculateCenterPoint(stops)
 
-  // Build the URL using the first location as center (more reliable than calculating center)
-  const url = `${baseUrl}?key=${apiKey}&q=${encodeURIComponent(firstStopAddress)}&zoom=14`
+  // Build the URL for the view
+  const url = `${baseUrl}?key=${apiKey}&center=${center}&zoom=14&maptype=roadmap`
 
   // Add markers for each stop
   const markers = stops
@@ -79,7 +79,7 @@ function generatePinsMapUrl(stops: PubStop[], apiKey: string): string {
 
 // Helper function to calculate the center point of all stops
 function calculateCenterPoint(stops: PubStop[]): string {
-  // Simply use the first stop's address as the center point
-  // This is more reliable than trying to calculate a mathematical center
-  return encodeURIComponent(stops[0]?.address || "")
+  // For simplicity, we'll use the address of the middle stop as the center
+  const middleIndex = Math.floor(stops.length / 2)
+  return encodeURIComponent(stops[middleIndex]?.address || stops[0]?.address || "")
 }

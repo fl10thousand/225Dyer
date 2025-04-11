@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import type { PubCrawlPlan, PubStop } from "@/lib/pub-crawl-types"
-import { Beer, Clock, MapPin, Share, Map, Printer, Globe } from "lucide-react"
+import { Beer, Clock, MapPin, Share, Map, Printer } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import FallbackImage from "@/components/fallback-image"
 
 interface PubCrawlTimelineProps {
   plan: PubCrawlPlan
@@ -12,7 +13,7 @@ interface PubCrawlTimelineProps {
 
 export default function PubCrawlTimeline({ plan }: PubCrawlTimelineProps) {
   const [copied, setCopied] = useState(false)
-  const [mapView, setMapView] = useState<"directions">("directions")
+  const [mapView, setMapView] = useState<"directions" | "pins">("directions")
   const [mapUrl, setMapUrl] = useState<string>("")
   const [isLoadingMap, setIsLoadingMap] = useState(true)
 
@@ -136,7 +137,21 @@ export default function PubCrawlTimeline({ plan }: PubCrawlTimelineProps) {
               Pub Crawl Map
             </CardTitle>
             <div className="flex gap-2">
-              <Button variant="default" size="sm" className="print:hidden">
+              <Button
+                variant={mapView === "pins" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setMapView("pins")}
+                className="print:hidden"
+              >
+                <MapPin className="h-4 w-4 mr-2" />
+                Show Pins
+              </Button>
+              <Button
+                variant={mapView === "directions" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setMapView("directions")}
+                className="print:hidden"
+              >
                 <Map className="h-4 w-4 mr-2" />
                 Show Route
               </Button>
@@ -199,85 +214,23 @@ interface PubStopCardProps {
   timePerStop: number
 }
 
+// Update the PubStopCard component to remove website functionality
 function PubStopCard({ stop, index, totalStops, timePerStop }: PubStopCardProps) {
   const timeString = `${Math.floor(timePerStop * 60)} minutes`
-  const [imageError, setImageError] = useState(false)
-  const [websiteValid, setWebsiteValid] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    const checkWebsite = async () => {
-      if (stop.website) {
-        try {
-          const response = await fetch("/api/check-website", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ url: stop.website }),
-          })
-          const data = await response.json()
-          setWebsiteValid(data.isAvailable)
-        } catch (error) {
-          console.error("Error checking website:", error)
-          setWebsiteValid(false)
-        }
-      } else {
-        setWebsiteValid(false)
-      }
-    }
-
-    checkWebsite()
-  }, [stop.website])
 
   // Ensure imageUrl is never an empty string
   const imageUrl = stop.imageUrl && stop.imageUrl.trim() !== "" ? stop.imageUrl : null
-
-  // Determine if the image is a favicon/logo (smaller image)
-  const isLogoImage =
-    imageUrl &&
-    (imageUrl.includes("google.com/s2/favicons") ||
-      imageUrl.includes("apple-touch-icon") ||
-      imageUrl.includes("favicon"))
-
-  // Generate a placeholder URL with the pub name
-  const placeholderUrl = "/public/images/logo-transparent-png.png"
-
-  // Handle image load error
-  const handleImageError = () => {
-    console.log(`Image failed to load for ${stop.name}: ${imageUrl}`)
-    setImageError(true)
-  }
 
   return (
     <Card className="overflow-hidden">
       <div className="md:flex">
         <div className="md:w-1/3 h-48 md:h-auto relative">
-          {isLogoImage || imageError ? (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100">
-              {!imageError ? (
-                <img
-                  src={imageUrl || placeholderUrl}
-                  alt={stop.name}
-                  className="max-w-[128px] max-h-[128px] object-contain"
-                  onError={handleImageError}
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center p-4 text-center">
-                  <Beer className="w-12 h-12 mb-2 text-gray-400" />
-                  <span className="text-sm text-gray-500">{stop.name}</span>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="w-full h-full">
-              <img
-                src={imageUrl || placeholderUrl}
-                alt={stop.name}
-                className="w-full h-full object-cover"
-                onError={handleImageError}
-              />
-            </div>
-          )}
+          <FallbackImage
+            src={imageUrl}
+            alt={stop.name}
+            fallbackSrc="/placeholder.svg?height=300&width=400"
+            className="w-full h-full object-cover"
+          />
           <div className="absolute top-2 left-2 bg-white/90 text-black font-bold rounded-full w-8 h-8 flex items-center justify-center">
             {index + 1}
           </div>
@@ -285,17 +238,7 @@ function PubStopCard({ stop, index, totalStops, timePerStop }: PubStopCardProps)
         <div className="md:w-2/3 p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
             <h3 className="text-xl font-bold">{stop.name}</h3>
-            {stop.website && websiteValid === true && (
-              <a
-                href={stop.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-blue-600 hover:text-blue-800 mt-1 sm:mt-0"
-              >
-                <Globe className="h-4 w-4 mr-1" />
-                Website
-              </a>
-            )}
+            {/* Website link section removed as requested */}
           </div>
 
           <div className="space-y-3 text-sm">
@@ -313,7 +256,7 @@ function PubStopCard({ stop, index, totalStops, timePerStop }: PubStopCardProps)
               <Beer className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0 text-gray-500" />
               <div>
                 <span className="font-medium">Recommended beer:</span> {stop.recommendedBeer}
-                <p className="text-gray-600 mt-1">{stop.beerDescription}</p>
+                {stop.beerDescription && <p className="text-gray-600 mt-1">{stop.beerDescription}</p>}
               </div>
             </div>
 

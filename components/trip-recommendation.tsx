@@ -255,11 +255,7 @@ export default function TripRecommendation({ recommendation }: TripRecommendatio
             </Link>
           </Button>
           <Button asChild>
-            <Link
-              href={`https://www.expedia.com/Hotel-Search?destination=${encodeURIComponent(recommendation.destination)}&startDate=&endDate=&adults=2&affcid=D9t3zuT`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <Link href="https://expedia.com/affiliate/D9t3zuT" target="_blank" rel="noopener noreferrer">
               Need a hotel?
             </Link>
           </Button>

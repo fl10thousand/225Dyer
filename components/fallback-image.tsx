@@ -88,11 +88,7 @@ export default function FallbackImage({
       {fill ? (
         <Image
           fill
-          style={{
-            objectFit: "cover",
-            objectPosition: "center",
-            aspectRatio: "1/1",
-          }}
+          style={{ objectFit: "cover", objectPosition: "center" }}
           src={imageSrc || fallbackSrc}
           alt={alt}
           className={className}
@@ -107,11 +103,6 @@ export default function FallbackImage({
           src={imageSrc || fallbackSrc}
           alt={alt}
           className={className}
-          style={{
-            aspectRatio: "1/1",
-            objectFit: "cover",
-            objectPosition: "center",
-          }}
           onError={handleError}
           onLoad={handleLoad}
           priority={priority}

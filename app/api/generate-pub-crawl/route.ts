@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import type { PubCrawlPreferences, PubCrawlPlan } from "@/lib/pub-crawl-types"
-import { findImageForPub } from "@/lib/image-search"
+import { searchForImage } from "@/lib/image-search"
 
 // Initialize Supabase client
 const supabaseUrl = process.env.SUPABASE_URL || ""
@@ -43,28 +43,24 @@ async function generatePubCrawlWithAI(preferences: PubCrawlPreferences): Promise
     The user prefers ${beerType === "any" ? "a variety of beers" : beerType + " beers"}.
     
     For each pub, include:
-    1. A realistic pub name that would exist in ${location} - use authentic local naming conventions
-    2. A brief but specific address in ${location} - use real neighborhoods and street names
+    1. A realistic pub name that would exist in ${location}
+    2. A brief address
     3. A recommended beer to try (preferably a ${beerType === "any" ? "local specialty" : beerType} if available)
     4. A short description of the recommended beer
-    5. A website URL for the pub (can be fictional but should follow realistic patterns like "thepubname.com")
-    
-    Make sure each pub is distinctly different from the others and represents the local pub culture of ${location}.
     
     Format the response as a JSON object with this structure:
     {
-      "title": "Pub Crawl in ${location}",
+      "title": "Pub Crawl in [Location]",
       "location": "${location}",
       "date": "Current date",
-      "summary": "A brief summary of the pub crawl highlighting what makes ${location}'s pub scene special",
+      "summary": "A brief summary of the pub crawl",
       "duration": ${duration},
       "stops": [
         {
           "name": "Pub Name",
-          "address": "Specific Address in ${location}",
+          "address": "Pub Address",
           "recommendedBeer": "Beer Name",
           "beerDescription": "Brief description of the beer",
-          "website": "https://pubwebsite.com",
           "type": "pub"
         }
       ]
@@ -94,7 +90,7 @@ async function generatePubCrawlWithAI(preferences: PubCrawlPreferences): Promise
           {
             role: "system",
             content:
-              "You are a helpful assistant that creates detailed pub crawl itineraries. You know about pubs, beer types, and locations worldwide. You always provide authentic, location-specific information that reflects the local culture and pub scene.",
+              "You are a helpful assistant that creates detailed pub crawl itineraries. You know about pubs, beer types, and locations worldwide.",
           },
           {
             role: "user",
@@ -163,21 +159,17 @@ async function enhancePubCrawlData(plan: PubCrawlPlan): Promise<PubCrawlPlan> {
 
   // Enhance each stop with additional data
   const enhancedStops = await Promise.all(
-    plan.stops.map(async (stop, index) => {
+    plan.stops.map(async (stop) => {
       // Add map link
       const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
         `${stop.name} ${stop.address} ${plan.location}`,
       )}`
 
-      // Delay each request slightly to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, index * 300))
-
-      // Search for an image using the enhanced pub image search
+      // Search for an image
       let imageUrl
       try {
-        console.log(`Finding image for pub ${index + 1}/${plan.stops.length}: ${stop.name} in ${plan.location}`)
-        imageUrl = await findImageForPub(stop.name, plan.location, stop.website, stop.imageUrl)
-        console.log(`Image result for ${stop.name}: ${imageUrl || "None found"}`)
+        const searchQuery = `${stop.name} pub ${plan.location}`
+        imageUrl = await searchForImage(searchQuery)
       } catch (error) {
         console.error(`Error fetching image for ${stop.name}:`, error)
       }
@@ -185,7 +177,7 @@ async function enhancePubCrawlData(plan: PubCrawlPlan): Promise<PubCrawlPlan> {
       return {
         ...stop,
         mapLink,
-        imageUrl: imageUrl || `/placeholder.svg?height=300&width=400&text=${encodeURIComponent(stop.name)}`,
+        imageUrl: imageUrl || undefined,
       }
     }),
   )
@@ -207,11 +199,6 @@ function createFallbackPubCrawl(preferences: PubCrawlPreferences): PubCrawlPlan 
   // Create generic pub stops
   const stops = Array.from({ length: pubCount }).map((_, index) => {
     const pubNumber = index + 1
-    const pubName = `${location} Pub #${pubNumber}`
-
-    // Create a fictional website URL based on the pub name
-    const websiteName = pubName.toLowerCase().replace(/[^a-z0-9]/g, "")
-    const website = `https://www.${websiteName}.com`
 
     // Generate beer recommendation based on preference
     let recommendedBeer = "Local Draft Beer"
@@ -259,15 +246,14 @@ function createFallbackPubCrawl(preferences: PubCrawlPreferences): PubCrawlPlan 
     }
 
     return {
-      name: pubName,
+      name: `${location} Pub #${pubNumber}`,
       address: `${location} City Center`,
       description: `A popular pub in ${location}.`,
-      website,
       mapLink: `https://www.google.com/maps/search/?api=1&query=pubs+in+${encodeURIComponent(location)}`,
       recommendedBeer,
       beerDescription,
       type: "pub",
-      imageUrl: `/placeholder.svg?height=300&width=400&text=${encodeURIComponent(pubName)}`,
+      imageUrl: `/placeholder.svg?height=300&width=400`,
     }
   })
 
