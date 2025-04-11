@@ -101,7 +101,8 @@ export default function Header() {
               <Button asChild variant="outline" className="ml-4 flex items-center gap-2">
                 <Link href="/pub-crawl">
                   <Beer className="h-4 w-4" />
-                  Pub Crawl <span className="text-xs ml-1 bg-primary/20 px-1.5 py-0.5 rounded-full">Beta</span>
+                  Pub Crawl
+                  <span className="ml-1 text-xs bg-primary/20 text-primary px-1 py-0.5 rounded">Beta</span>
                 </Link>
               </Button>
             </NavigationMenu>

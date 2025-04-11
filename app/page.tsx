@@ -47,7 +47,7 @@ export default function Home() {
                   Tell us your interests and location — we'll instantly build your perfect day trip.
                 </p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center md:justify-start mt-5 flex-wrap">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center md:justify-start mt-5">
                 <Button
                   asChild
                   size="lg"
@@ -59,20 +59,9 @@ export default function Home() {
                   variant="outline"
                   asChild
                   size="lg"
-                  className="bg-white/20 backdrop-blur-sm border-white border-2 text-white shadow-md px-6 md:px-10 py-5 md:py-7 text-base md:text-lg font-medium transition-all duration-300 hover:bg-white/30 hover:scale-105 hover:shadow-lg flex items-center gap-2"
-                >
-                  <Link href="/find-trip">
-                    <Car className="h-5 w-5" />
-                    Road Trip
-                  </Link>
-                </Button>
-                <Button
-                  variant="outline"
-                  asChild
-                  size="lg"
                   className="bg-white/20 backdrop-blur-sm border-white border-2 text-white shadow-md px-6 md:px-10 py-5 md:py-7 text-base md:text-lg font-medium transition-all duration-300 hover:bg-white/30 hover:scale-105 hover:shadow-lg"
                 >
-                  <Link href="/pub-crawl">Pub Crawl</Link>
+                  <Link href="/blog">Explore Our Blog</Link>
                 </Button>
               </div>
             </div>

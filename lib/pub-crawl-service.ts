@@ -42,7 +42,6 @@ export async function generatePubCrawl(preferences: PubCrawlPreferences): Promis
       },
       body: JSON.stringify(preferences),
       signal: controller.signal,
-      cache: "no-store", // Prevent caching
     })
 
     clearTimeout(timeoutId)
@@ -128,11 +127,14 @@ async function enhancePubCrawlWithImages(plan: PubCrawlPlan): Promise<PubCrawlPl
 
 // Create a fallback pub crawl for when the API call fails
 function createFallbackPubCrawl(preferences: PubCrawlPreferences): PubCrawlPlan {
-  const { location = "Unknown Location", beerType = "any", pubCount = 3, duration = 3 } = preferences
+  const { location, beerType, pubCount, duration } = preferences
 
   // Create a title and summary
   const title = `Pub Crawl in ${location}`
   const summary = `A ${duration}-hour pub crawl in ${location} featuring ${pubCount} pubs with a focus on ${beerType === "any" ? "various" : beerType} beers.`
+
+  // Calculate time per pub
+  const timePerPub = duration / pubCount
 
   // Create generic pub stops
   const stops: PubStop[] = Array.from({ length: pubCount }).map((_, index) => {
@@ -184,14 +186,13 @@ function createFallbackPubCrawl(preferences: PubCrawlPreferences): PubCrawlPlan 
     }
 
     return {
-      name: `${location} Pub #${pubNumber}`,
+      name: `Pub Stop #${pubNumber}`,
       address: `${location} City Center`,
       description: `A popular pub in ${location}.`,
       mapLink: `https://www.google.com/maps/search/?api=1&query=pubs+in+${encodeURIComponent(location)}`,
       recommendedBeer,
       beerDescription,
       type: "pub",
-      imageUrl: `/placeholder.svg?height=300&width=400`,
     }
   })
 

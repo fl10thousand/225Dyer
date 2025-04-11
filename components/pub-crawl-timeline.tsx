@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import type { PubCrawlPlan, PubStop } from "@/lib/pub-crawl-types"
-import { Beer, Clock, MapPin, Share, Map, Printer } from "lucide-react"
+import { Beer, Clock, ExternalLink, MapPin, Share } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import FallbackImage from "@/components/fallback-image"
 
@@ -13,71 +13,6 @@ interface PubCrawlTimelineProps {
 
 export default function PubCrawlTimeline({ plan }: PubCrawlTimelineProps) {
   const [copied, setCopied] = useState(false)
-  const [mapView, setMapView] = useState<"directions" | "pins">("directions")
-  const [mapUrl, setMapUrl] = useState<string>("")
-  const [isLoadingMap, setIsLoadingMap] = useState(true)
-
-  // Fetch the map URL from the server
-  useEffect(() => {
-    async function fetchMapUrl() {
-      setIsLoadingMap(true)
-      try {
-        const response = await fetch("/api/generate-map-url", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            stops: plan.stops,
-            mapType: mapView,
-          }),
-        })
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch map URL")
-        }
-
-        const data = await response.json()
-        setMapUrl(data.mapUrl)
-      } catch (error) {
-        console.error("Error fetching map URL:", error)
-        // Fallback to a static map or error message
-        setMapUrl(`https://www.google.com/maps/embed/v1/place?q=${encodeURIComponent(plan.location)}&zoom=12`)
-      } finally {
-        setIsLoadingMap(false)
-      }
-    }
-
-    if (plan.stops && plan.stops.length > 0) {
-      fetchMapUrl()
-    }
-  }, [plan.stops, mapView, plan.location])
-
-  // Update map when view changes
-  useEffect(() => {
-    if (plan.stops && plan.stops.length > 0) {
-      setIsLoadingMap(true)
-      fetch("/api/generate-map-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          stops: plan.stops,
-          mapType: mapView,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setMapUrl(data.mapUrl)
-          setIsLoadingMap(false)
-        })
-        .catch((error) => {
-          console.error("Error updating map:", error)
-          setIsLoadingMap(false)
-        })
-    }
-  }, [mapView, plan.stops])
 
   const handleShare = async () => {
     try {
@@ -99,18 +34,6 @@ export default function PubCrawlTimeline({ plan }: PubCrawlTimelineProps) {
     }
   }
 
-  // Generate a printable map URL (this doesn't expose API key)
-  function generatePrintableMapUrl(stops: PubStop[]): string {
-    // Base URL for Google Maps
-    const baseUrl = "https://www.google.com/maps/dir/"
-
-    // Create a string of all addresses
-    const addresses = stops.map((stop) => encodeURIComponent(stop.address)).join("/")
-
-    // Build the URL
-    return `${baseUrl}${addresses}`
-  }
-
   return (
     <div className="space-y-6">
       <Card>
@@ -128,70 +51,6 @@ export default function PubCrawlTimeline({ plan }: PubCrawlTimelineProps) {
         </CardHeader>
       </Card>
 
-      {/* Map section */}
-      <Card className="overflow-hidden">
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-xl flex items-center">
-              <Map className="h-5 w-5 mr-2 text-blue-500" />
-              Pub Crawl Map
-            </CardTitle>
-            <div className="flex gap-2">
-              <Button
-                variant={mapView === "pins" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setMapView("pins")}
-                className="print:hidden"
-              >
-                <MapPin className="h-4 w-4 mr-2" />
-                Show Pins
-              </Button>
-              <Button
-                variant={mapView === "directions" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setMapView("directions")}
-                className="print:hidden"
-              >
-                <Map className="h-4 w-4 mr-2" />
-                Show Route
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => window.open(generatePrintableMapUrl(plan.stops), "_blank")}
-                className="print:hidden"
-              >
-                <Printer className="h-4 w-4 mr-2" />
-                Print Map
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <div className="aspect-video w-full p-4 pb-6">
-          <div className="w-full h-full rounded-lg overflow-hidden border relative">
-            {isLoadingMap && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-              </div>
-            )}
-            {mapUrl && (
-              <iframe
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                style={{ border: 0 }}
-                src={mapUrl}
-                allowFullScreen
-                aria-hidden="false"
-                tabIndex={0}
-                title="Pub Crawl Map"
-                className={isLoadingMap ? "opacity-30" : "opacity-100"}
-              ></iframe>
-            )}
-          </div>
-        </div>
-      </Card>
-
       <div className="space-y-6">
         {plan.stops.map((stop, index) => (
           <PubStopCard
@@ -207,6 +66,18 @@ export default function PubCrawlTimeline({ plan }: PubCrawlTimelineProps) {
   )
 }
 
+// Function to generate a likely website URL from a pub name
+function generateWebsiteUrl(pubName: string): string {
+  // Remove "The" from the beginning if present
+  let name = pubName.replace(/^The\s+/i, "")
+
+  // Convert to lowercase and replace spaces and special chars with nothing
+  name = name.toLowerCase().replace(/[^a-z0-9]/g, "")
+
+  // Add www. prefix and .com suffix
+  return `https://www.${name}.com`
+}
+
 interface PubStopCardProps {
   stop: PubStop
   index: number
@@ -214,12 +85,14 @@ interface PubStopCardProps {
   timePerStop: number
 }
 
-// Update the PubStopCard component to remove website functionality
 function PubStopCard({ stop, index, totalStops, timePerStop }: PubStopCardProps) {
   const timeString = `${Math.floor(timePerStop * 60)} minutes`
 
   // Ensure imageUrl is never an empty string
   const imageUrl = stop.imageUrl && stop.imageUrl.trim() !== "" ? stop.imageUrl : null
+
+  // Generate a likely website URL if one isn't provided
+  const websiteUrl = stop.website || generateWebsiteUrl(stop.name)
 
   return (
     <Card className="overflow-hidden">
@@ -238,7 +111,18 @@ function PubStopCard({ stop, index, totalStops, timePerStop }: PubStopCardProps)
         <div className="md:w-2/3 p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
             <h3 className="text-xl font-bold">{stop.name}</h3>
-            {/* Website link section removed as requested */}
+            <div className="mt-1 sm:mt-0">
+              <a
+                href={websiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+                title={stop.website ? "Official website" : "Best guess website - may not be accurate"}
+              >
+                <ExternalLink className="h-4 w-4 mr-1" />
+                {stop.website ? "Visit website" : "Visit likely website"}
+              </a>
+            </div>
           </div>
 
           <div className="space-y-3 text-sm">

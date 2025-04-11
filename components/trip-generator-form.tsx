@@ -274,50 +274,48 @@ export default function TripGeneratorForm() {
   // }, [generatedTrip]) // Re-run when generatedTrip changes
 
   return (
-    <div className="space-y-8 font-['Inter',sans-serif] bg-[#F9FAFB] p-4 sm:p-6 rounded-xl">
-      <Card className="transition-all duration-300 hover:shadow-xl border-0 bg-white rounded-2xl overflow-hidden shadow-lg">
-        <CardHeader className="pb-3 px-6 sm:px-8 pt-8 border-b border-gray-100">
-          <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl text-gray-800">
-            <Globe className="h-6 w-6 text-[#3B82F6]" />
+    <div className="space-y-8">
+      <Card className="transition-all duration-300 hover:shadow-lg">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2">
+            <Globe className="h-5 w-5 text-highlight-blue" />
             Generate Your Perfect Day Trip
-            <Badge
-              variant="outline"
-              className="ml-2 bg-blue-50 text-[#3B82F6] border-blue-100 font-medium px-3 py-1 rounded-full"
-            >
+            <Badge variant="outline" className="ml-2">
               Worldwide
             </Badge>
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6 px-6 sm:px-8 pb-8 relative">
+        <CardContent className="pt-2">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="location"
                 render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="text-gray-800 font-medium">
-                      Location <span className="text-sm font-normal text-gray-500">(anywhere in the world)</span>
+                  <FormItem>
+                    <FormLabel>
+                      Location{" "}
+                      <span className="text-sm font-normal text-muted-foreground">(anywhere in the world)</span>
                     </FormLabel>
                     <FormControl>
                       <Input
                         placeholder="e.g. Kyoto, Japan or Kona, Hawaii"
                         {...field}
-                        className="h-14 border-2 border-gray-200 focus:border-[#3B82F6] focus-visible:ring-2 focus-visible:ring-[#3B82F6]/20 focus-visible:ring-offset-2 shadow-sm transition-all duration-300 hover:shadow-md focus:shadow-md text-lg font-medium placeholder:text-gray-400 rounded-xl"
+                        className="h-14 border-2 border-primary/30 focus:border-primary focus-visible:ring-primary/20 focus-visible:ring-offset-2 shadow-sm transition-all duration-300 hover:shadow-md focus:shadow-md focus:shadow-primary/10 text-xl font-bold placeholder:text-muted-foreground/70"
                       />
                     </FormControl>
-                    <FormDescription className="text-gray-500">
+                    <FormDescription>
                       Enter any city or area in the world where you want to have your day trip. Include the country name
                       for better results (e.g., "Barcelona, Spain").
                     </FormDescription>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500 mb-2">Popular destinations:</p>
+                      <p className="text-sm text-muted-foreground mb-2">Popular destinations:</p>
                       <div className="flex flex-wrap gap-2">
                         {allDestinations.slice(0, 10).map((destination) => (
                           <Badge
                             key={destination}
                             variant="secondary"
-                            className="cursor-pointer hover:bg-gray-100 transition-colors duration-200 text-gray-700 bg-gray-50 px-3 py-1 rounded-full"
+                            className="cursor-pointer hover:bg-secondary/80 transition-colors duration-200"
                             onClick={() => handleDestinationClick(destination)}
                           >
                             {destination}
@@ -325,98 +323,87 @@ export default function TripGeneratorForm() {
                         ))}
                       </div>
                     </div>
-                    <FormMessage className="text-red-500" />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="p-6 bg-gray-50 rounded-xl">
-                <FormField
-                  control={form.control}
-                  name="interests"
-                  render={() => (
-                    <FormItem>
-                      <div className="mb-4">
-                        <FormLabel className="text-gray-800 font-medium">Interests</FormLabel>
-                        <FormDescription className="text-gray-500">
-                          Pick what you love — we'll build your day around it.
-                        </FormDescription>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        {interestOptions.map((interest) => (
-                          <FormField
-                            key={interest.id}
-                            control={form.control}
-                            name="interests"
-                            render={({ field }) => {
-                              return (
-                                <TooltipProvider key={interest.id}>
-                                  <Tooltip>
-                                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border p-4 transition-all duration-200 hover:border-[#3B82F6]/50 hover:bg-blue-50/30">
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(interest.id)}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([...field.value, interest.id])
-                                              : field.onChange(field.value?.filter((value) => value !== interest.id))
-                                          }}
-                                          className="border-2 data-[state=checked]:bg-[#10B981] data-[state=checked]:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/20"
-                                        />
-                                      </FormControl>
-                                      <div className="space-y-1 leading-none">
-                                        <FormLabel className="font-medium cursor-pointer text-gray-800">
-                                          {interest.label}
-                                        </FormLabel>
-                                        <TooltipTrigger asChild>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-5 w-5 p-0 text-gray-500 hover:text-[#10B981]"
-                                          >
-                                            <Info className="h-3 w-3" />
-                                            <span className="sr-only">Info</span>
-                                          </Button>
-                                        </TooltipTrigger>
-                                      </div>
-                                    </FormItem>
-                                    <TooltipContent side="right" className="bg-gray-800 text-white">
-                                      <p className="max-w-xs">{interest.description}</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              )
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage className="text-red-500 mt-2" />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="interests"
+                render={() => (
+                  <FormItem>
+                    <div className="mb-4">
+                      <FormLabel>Interests</FormLabel>
+                      <FormDescription>Pick what you love — we'll build your day around it.</FormDescription>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {interestOptions.map((interest) => (
+                        <FormField
+                          key={interest.id}
+                          control={form.control}
+                          name="interests"
+                          render={({ field }) => {
+                            return (
+                              <TooltipProvider key={interest.id}>
+                                <Tooltip>
+                                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 transition-all duration-200 hover:border-primary/50 hover:bg-primary/5">
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.includes(interest.id)}
+                                        onCheckedChange={(checked) => {
+                                          return checked
+                                            ? field.onChange([...field.value, interest.id])
+                                            : field.onChange(field.value?.filter((value) => value !== interest.id))
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <div className="space-y-1 leading-none">
+                                      <FormLabel className="font-normal cursor-pointer">{interest.label}</FormLabel>
+                                      <TooltipTrigger asChild>
+                                        <Button variant="ghost" size="sm" className="h-5 w-5 p-0 text-muted-foreground">
+                                          <Info className="h-3 w-3" />
+                                          <span className="sr-only">Info</span>
+                                        </Button>
+                                      </TooltipTrigger>
+                                    </div>
+                                  </FormItem>
+                                  <TooltipContent side="right">
+                                    <p className="max-w-xs">{interest.description}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="budget"
                   render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel className="text-gray-800 font-medium">Budget</FormLabel>
+                    <FormItem>
+                      <FormLabel>Budget</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 rounded-xl">
+                          <SelectTrigger>
                             <SelectValue placeholder="Select your budget" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="border-gray-200 rounded-xl shadow-lg">
+                        <SelectContent>
                           <SelectItem value="budget">Budget-friendly</SelectItem>
                           <SelectItem value="moderate">Moderate</SelectItem>
                           <SelectItem value="luxury">Luxury</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription className="text-gray-500">{getBudgetDescription(field.value)}</FormDescription>
-                      <FormMessage className="text-red-500" />
+                      <FormDescription>{getBudgetDescription(field.value)}</FormDescription>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -425,47 +412,39 @@ export default function TripGeneratorForm() {
                   control={form.control}
                   name="transportationMode"
                   render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel className="text-gray-800 font-medium">Transportation</FormLabel>
+                    <FormItem>
+                      <FormLabel>Transportation</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                          <SelectTrigger className="h-12 border-2 border-gray-200 focus:border-[#3B82F6] focus:ring-2 focus:ring-[#3B82F6]/20 rounded-xl">
+                          <SelectTrigger>
                             <SelectValue placeholder="Select transportation mode" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="border-gray-200 rounded-xl shadow-lg">
+                        <SelectContent>
                           <SelectItem value="driving">Driving</SelectItem>
                           <SelectItem value="public transport">Public Transport</SelectItem>
                           <SelectItem value="walking">Walking</SelectItem>
                         </SelectContent>
                       </Select>
-                      <FormDescription className="text-gray-500">
-                        {getTransportDescription(field.value)}
-                      </FormDescription>
-                      <FormMessage className="text-red-500" />
+                      <FormDescription>{getTransportDescription(field.value)}</FormDescription>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="startTime"
                   render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel className="text-gray-800 font-medium">Start Time</FormLabel>
+                    <FormItem>
+                      <FormLabel>Start Time</FormLabel>
                       <FormControl>
-                        <Input
-                          type="time"
-                          {...field}
-                          className="h-12 border-2 border-gray-200 focus:border-[#3B82F6] focus-visible:ring-2 focus-visible:ring-[#3B82F6]/20 rounded-xl"
-                        />
+                        <Input type="time" {...field} />
                       </FormControl>
-                      <FormDescription className="text-gray-500">
-                        When would you like to start your day?
-                      </FormDescription>
-                      <FormMessage className="text-red-500" />
+                      <FormDescription>When would you like to start your day?</FormDescription>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -474,17 +453,13 @@ export default function TripGeneratorForm() {
                   control={form.control}
                   name="endTime"
                   render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel className="text-gray-800 font-medium">End Time</FormLabel>
+                    <FormItem>
+                      <FormLabel>End Time</FormLabel>
                       <FormControl>
-                        <Input
-                          type="time"
-                          {...field}
-                          className="h-12 border-2 border-gray-200 focus:border-[#3B82F6] focus-visible:ring-2 focus-visible:ring-[#3B82F6]/20 rounded-xl"
-                        />
+                        <Input type="time" {...field} />
                       </FormControl>
-                      <FormDescription className="text-gray-500">When would you like to end your day?</FormDescription>
-                      <FormMessage className="text-red-500" />
+                      <FormDescription>When would you like to end your day?</FormDescription>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -494,20 +469,16 @@ export default function TripGeneratorForm() {
                 control={form.control}
                 name="mealPreferences"
                 render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel className="text-gray-800 font-medium">Meal Preferences (Optional)</FormLabel>
+                  <FormItem>
+                    <FormLabel>Meal Preferences (Optional)</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="e.g. Vegetarian, Italian cuisine, seafood, etc."
-                        {...field}
-                        className="h-12 border-2 border-gray-200 focus:border-[#3B82F6] focus-visible:ring-2 focus-visible:ring-[#3B82F6]/20 rounded-xl"
-                      />
+                      <Input placeholder="e.g. Vegetarian, Italian cuisine, seafood, etc." {...field} />
                     </FormControl>
-                    <FormDescription className="text-gray-500">
+                    <FormDescription>
                       Any specific food preferences or dietary restrictions? Be as specific as possible for better
                       recommendations.
                     </FormDescription>
-                    <FormMessage className="text-red-500" />
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -516,17 +487,13 @@ export default function TripGeneratorForm() {
                 control={form.control}
                 name="accessibility"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-xl border p-5 transition-all duration-200 hover:border-[#3B82F6]/50 hover:bg-blue-50/30">
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 transition-all duration-200 hover:border-primary/50 hover:bg-primary/5">
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="border-2 data-[state=checked]:bg-[#10B981] data-[state=checked]:border-[#10B981] focus:ring-2 focus:ring-[#10B981]/20"
-                      />
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel className="font-medium text-gray-800">Accessibility Needs</FormLabel>
-                      <FormDescription className="text-gray-500">
+                      <FormLabel>Accessibility Needs</FormLabel>
+                      <FormDescription>
                         Check this if you need wheelchair accessible locations and activities.
                       </FormDescription>
                     </div>
@@ -535,9 +502,9 @@ export default function TripGeneratorForm() {
               />
 
               {apiError && (
-                <Alert variant="destructive" className="mt-4 bg-red-50 border-red-200 text-red-800 rounded-xl">
-                  <AlertTriangle className="h-4 w-4 text-red-600" />
-                  <AlertTitle className="font-medium">Error</AlertTitle>
+                <Alert variant="destructive" className="mt-4">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
                   <AlertDescription>{apiError}</AlertDescription>
                 </Alert>
               )}
@@ -545,7 +512,7 @@ export default function TripGeneratorForm() {
               <Button
                 type="submit"
                 disabled={isGenerating}
-                className="w-full py-6 text-lg font-medium bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-xl shadow-lg mt-8 transition-all duration-300 hover:shadow-xl hover:shadow-blue-200/50"
+                className="w-full py-6 text-lg font-medium bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-lg mt-8"
               >
                 {isGenerating ? (
                   <>
@@ -553,7 +520,7 @@ export default function TripGeneratorForm() {
                     Creating Personalized Trip...
                   </>
                 ) : (
-                  "Generate your personalized day trip"
+                  "Generate your personalize day trip"
                 )}
               </Button>
             </form>
@@ -562,11 +529,11 @@ export default function TripGeneratorForm() {
       </Card>
 
       {generatedTrip && (
-        <div className="space-y-6 bg-white p-6 rounded-2xl shadow-lg">
+        <div className="space-y-6">
           {isUsingFallback && (
-            <Alert variant="warning" className="bg-amber-50 border-amber-200 rounded-xl">
+            <Alert variant="warning" className="bg-amber-50 border-amber-200">
               <AlertTriangle className="h-4 w-4 text-amber-600" />
-              <AlertTitle className="text-amber-800 font-medium">Using Basic Template</AlertTitle>
+              <AlertTitle className="text-amber-800">Using Basic Template</AlertTitle>
               <AlertDescription className="text-amber-700">
                 We're currently showing a basic template instead of a fully personalized itinerary. Try adjusting your
                 preferences or try again later for a more detailed plan.
@@ -576,8 +543,8 @@ export default function TripGeneratorForm() {
 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-800">{generatedTrip.title}</h2>
-              <p className="text-gray-500">{generatedTrip.summary}</p>
+              <h2 className="text-2xl font-bold">{generatedTrip.title}</h2>
+              <p className="text-muted-foreground">{generatedTrip.summary}</p>
             </div>
           </div>
 
@@ -596,13 +563,13 @@ export default function TripGeneratorForm() {
           />
 
           {!user && (
-            <div className="rounded-xl border bg-gray-50 p-5 text-gray-800 shadow-sm hover:shadow-md transition-all duration-300 text-center">
-              <p>
-                <Button variant="link" className="text-[#3B82F6] hover:text-[#2563EB]" asChild>
+            <div className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm hover:shadow-md transition-all duration-300">
+              <p className="text-center">
+                <Button variant="link" asChild>
                   <a href="/login">Sign in</a>
                 </Button>
                 or
-                <Button variant="link" className="text-[#3B82F6] hover:text-[#2563EB]" asChild>
+                <Button variant="link" asChild>
                   <a href="/signup">create an account</a>
                 </Button>
                 to save this trip for later!

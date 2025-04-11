@@ -15,23 +15,14 @@ type SupabaseContext = {
 
 const Context = createContext<SupabaseContext | undefined>(undefined)
 
-// Update the singleton implementation to be more robust
-
-// Replace the existing singleton implementation with this enhanced version:
 // Create a singleton instance of the Supabase client to prevent multiple instances
 let supabaseInstance: SupabaseClient | null = null
 
 function getSupabaseClient() {
-  if (typeof window !== "undefined") {
-    // Only create the instance in the browser environment
-    if (!supabaseInstance) {
-      supabaseInstance = createClientComponentClient()
-    }
-    return supabaseInstance
+  if (!supabaseInstance) {
+    supabaseInstance = createClientComponentClient()
   }
-  // For server-side rendering, create a new instance each time
-  // This won't cause the multiple instances warning since it's not in browser context
-  return createClientComponentClient()
+  return supabaseInstance
 }
 
 export default function SupabaseProvider({
