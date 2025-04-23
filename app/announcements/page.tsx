@@ -11,42 +11,41 @@ export default function AnnouncementsPage() {
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-[#FF8200] flex items-center">
                 <CalendarIcon className="mr-2" />
-                Exciting News: Bayberry Garden's Smart Market is Coming to Our Lobby!
+                Smart Market by Bayberry Garden Now Open in Our Lobby!
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 mb-4">
-                We're thrilled to announce that an autonomous Smart Market by Bayberry Garden (DBA g&m Market) has been
-                approved and will be installed in our lobby in the second week of March!
+                We're excited to announce that the autonomous Smart Market by Bayberry Garden (DBA g&m Market) is now
+                open in our lobby!
               </p>
-              <h3 className="text-xl font-semibold text-[#63666A] mb-2">What to Expect:</h3>
+              <h3 className="text-xl font-semibold text-[#63666A] mb-2">What You'll Find:</h3>
               <ul className="list-none space-y-2 mb-4">
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✅</span>
                   <span>
-                    <strong>24/7 Convenience:</strong> Tenants will have round-the-clock access to fresh, healthy food
-                    options, all curated by the chef of Bayberry Garden.
+                    <strong>Fresh, Healthy Options:</strong> The market offers a variety of fresh snacks and meals
+                    prepared by the talented team at Bayberry Garden.
                   </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✅</span>
                   <span>
-                    <strong>Health & Wellness Focus:</strong> This amenity aligns with our commitment to tenant
-                    wellness, offering high-quality, nutritious meals and snacks right in the building.
+                    <strong>24/7 Convenience:</strong> Tenants have round-the-clock access to nutritious food options
+                    right in the building.
                   </span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✅</span>
                   <span>
-                    <strong>Thoughtful Design:</strong> The Smart Market will be placed in the lobby's corner nook,
-                    ensuring accessibility while maintaining the space's clean and open aesthetic. The design will
-                    seamlessly blend with our existing metalwork and décor.
+                    <strong>Easy Access:</strong> The Smart Market is conveniently located in the lobby's corner nook,
+                    seamlessly blending with our existing metalwork and décor.
                   </span>
                 </li>
               </ul>
               <p className="text-gray-600">
-                Stay tuned for more details as we get closer to the launch date. We're confident this addition will be a
-                valuable and well-received amenity for our tenants!
+                We hope you enjoy this new amenity! Please let us know your feedback as you try out the various
+                offerings from the Smart Market.
               </p>
             </CardContent>
           </Card>
