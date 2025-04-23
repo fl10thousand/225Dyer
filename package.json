@@ -58,14 +58,9 @@
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",
     "zod": "^3.24.1",
-    "@remix-run/react": "latest",
-    "@sveltejs/kit": "latest",
-    "svelte": "latest",
-    "vue": "latest",
-    "vue-router": "latest",
+    "react-markdown": "latest",
     "fs": "latest",
-    "path": "latest",
-    "@vercel/analytics": "latest"
+    "path": "latest"
   },
   "devDependencies": {
     "@types/node": "^22",

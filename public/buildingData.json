@@ -1,0 +1,199 @@
+{
+  "building": {
+    "name": "225 Dyer Street",
+    "address": "225 Dyer St, Providence, RI 02903",
+    "owner": "Ventas (REIT)",
+    "construction_year": 2019,
+    "certifications": {
+      "LEED": "Gold",
+      "Energy Star": "89/100"
+    },
+    "total_population": 2000,
+    "floors": {
+      "above_street": 7,
+      "below_street": 0
+    },
+    "features": {
+      "fire_safety": {
+        "fire_alarms": "Yes, with voice communication system",
+        "automatic_sprinklers": "Yes, throughout the building",
+        "emergency_exits": 3
+      },
+      "security": {
+        "controlled_access": "24/7 security with cameras, guards, and card access after hours",
+        "emergency_contact": "508-207-7046",
+        "incident_reporting": "Security logs incidents and communicates to management",
+        "tenant_access_cards": "Each employee must have their own card; lost/stolen cards must be reported immediately"
+      },
+      "ventilation": {
+        "air_quality": "CO2 levels ~550 ppm depending on occupancy",
+        "humidity_control": "Outdoor air; can dehumidify but not humidify"
+      },
+      "HVAC": {
+        "service_hours": "24/7",
+        "overtime_HVAC": {
+          "request_deadline": "4:00 PM on the preceding business day",
+          "rate_per_hour_per_floor": 50,
+          "subject_to_adjustment": true
+        },
+        "temperature_standards": {
+          "summer": {
+            "temperature_range": "73°F to 79°F",
+            "humidity_range": "40% to 60%"
+          },
+          "winter": {
+            "temperature_range": "68°F to 74°F",
+            "humidity_range": "30% to 60%"
+          }
+        }
+      },
+      "sustainability": {
+        "HVAC_efficiency": "High-efficiency systems",
+        "low_flow_fixtures": "Yes",
+        "recycling": "Single-stream program"
+      },
+      "facilities": {
+        "elevators": 4,
+        "drinking_water": "Safe water supply",
+        "asbestos_free": "Yes, no PCB materials"
+      }
+    }
+  },
+  "building_amenities": {
+    "restaurant": {
+      "name": "Bayberry Garden",
+      "description": "Bayberry Garden offers a uniquely New England-inspired dining experience that melds creative seasonal dishes, a sustainable raw bar, and exploratory wine, cocktail, and beer lists, with immersive restaurant design.",
+      "location": "Ground floor, 225 Dyer St.",
+      "website": "https://www.bayberrygarden.com",
+      "contact": {
+        "phone": "401-642-5013",
+        "email": "info@bayberrygarden.com"
+      },
+      "hours": {
+        "monday-friday": "11:30 AM - 10:00 PM",
+        "saturday": "12:00 PM - 11:00 PM",
+        "sunday": "12:00 PM - 9:00 PM"
+      }
+    }
+  },
+  "event_policies": {
+    "common_areas": "Includes outdoor areas (excluding CIC's third-floor patio) and lobby areas, including the 7th floor if vacant",
+    "event_requests": "Submit at least one week before the event for approval",
+    "prohibited_events": "Political events in common areas are forbidden",
+    "vendor_insurance": "All vendors must provide COI before the event",
+    "legal_contracts": "Third-party events require a 25-page Right of Entry contract and one month's notice",
+    "cleaning_fees": {
+      "required_for_alcohol_events": true,
+      "standard_cleaning_cost": 150,
+      "hourly_cleaning_rate": 28.5,
+      "hourly_cleaning_minimum_hours": 4,
+      "additional_info": "Cleaning fees apply for events with alcohol or if additional cleaning is needed. The event host must arrange cleaning services."
+    },
+    "event_staffing": "Additional security and cleaning may be required for larger events or alcohol service"
+  },
+  "insurance_requirements": {
+    "event_vendors": {
+      "required": true,
+      "certificate_of_insurance_required": true,
+      "general_liability": "$1,000,000 per occurrence, $2,000,000 aggregate",
+      "automobile_liability": "$1,000,000 per accident",
+      "workers_compensation": "Statutory limits as required by law",
+      "umbrella_liability": "$5,000,000 per occurrence/aggregate",
+      "additional_insured": "Owner, property management, and affiliates must be named as additional insureds",
+      "waiver_of_subrogation": "Required for all policies"
+    }
+  },
+  "tenant_services": {
+    "maintenance_requests": {
+      "work_order_submission": "[Submit through Building Engines](https://app.buildingengines.com/geofire/login)",
+      "emergency_contact": "508-207-7046",
+      "common_issues": {
+        "lighting": "For burnt-out bulbs or flickering lights, submit a work order via Building Engines.",
+        "HVAC": "For heating or air conditioning problems, submit a request through Building Engines.",
+        "plumbing": "For leaks, clogs, or water issues, submit a work order through Building Engines.",
+        "electrical": "For power issues, broken outlets, or wiring concerns, use Building Engines.",
+        "doors/windows": "For broken locks, stuck doors, or cracked windows, request service via Building Engines."
+      }
+    },
+    "parking": {
+      "location": "Clifford Street Parking Facility, 75 Clifford St, Providence, RI 02903",
+      "prox_cards": "Required for entry/exit; cannot be shared",
+      "payment_deadlines": "Fees due by the 1st of each month",
+      "late_fees": "Cards deactivated after the 5th; reinstatement requires a $10 fee"
+    },
+    "mailroom": {
+      "location": "Suite 120",
+      "daily_deliveries": "USPS, FedEx, UPS",
+      "address_format": "225 Dyer St., Suite [Number], Providence, RI 02903"
+    },
+    "bike_storage": {
+      "availability": "Indoor and outdoor storage, no overnight storage allowed",
+      "access": "Card access required; request via property management"
+    }
+  },
+  "fees_and_services": {
+    "cleaning_services": {
+      "standard_cleaning_fee": 150,
+      "hourly_cleaning_rate": 28.5,
+      "minimum_hours": 4
+    },
+    "building_engineer": {
+      "business_hours": 55,
+      "after_hours": 82.5
+    },
+    "security_services": {
+      "business_hours": 27.18,
+      "after_hours": 40.77
+    },
+    "hvac_services": {
+      "after_hours": 155
+    }
+  },
+  "contractors": {
+    "painting": [
+      {
+        "name": "Gil's Property Service",
+        "phone": "401-944-7156"
+      },
+      {
+        "name": "Ocean State Services",
+        "phone": "401-431-9050"
+      }
+    ],
+    "plumbing": [
+      {
+        "name": "Professional Piping",
+        "phone": "508-644-2221"
+      },
+      {
+        "name": "Woods Rooter Service",
+        "phone": "401-432-6405"
+      }
+    ],
+    "electrical": [
+      {
+        "name": "Superior Electric",
+        "phone": "401-738-8822"
+      }
+    ]
+  },
+  "contact_information": {
+    "management_office": {
+      "hours": "Mon-Fri, 8:30 AM - 5:00 PM",
+      "location": "Suite 121"
+    },
+    "property_manager": {
+      "name": "David Konetski",
+      "email": "konetski@cic.com",
+      "phone": "401-262-7800"
+    },
+    "assistant_property_manager": {
+      "name": "Marta Tessier",
+      "email": "marta.tessier@cic.com"
+    },
+    "chief_engineer": {
+      "name": "Martin Loomis",
+      "email": "martin.loomis@cushwake.com"
+    }
+  }
+}

@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  staticPageGenerationTimeout: 120,
-  experimental: {
-    serverActions: true,
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -15,4 +11,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
