@@ -1,37 +1,8 @@
-// This file contains server-side only code
-import fs from "fs"
-import path from "path"
+// Import the knowledge base directly instead of using fs
+import knowledgeBaseData from "@/public/buildingData.json"
 
-// Load the JSON data once
-let knowledgeBase: any = {}
-
-try {
-  const knowledgeBasePath = path.join(process.cwd(), "public", "buildingData.json")
-  const fileContent = fs.readFileSync(knowledgeBasePath, "utf8")
-  knowledgeBase = JSON.parse(fileContent)
-  console.log("Knowledge base loaded successfully")
-} catch (error) {
-  console.error("Error loading knowledge base:", error)
-  // Initialize with empty structure to prevent errors
-  knowledgeBase = {
-    building: {},
-    building_amenities: {},
-    event_policies: {},
-    insurance_requirements: {},
-    tenant_services: {
-      maintenance_requests: {
-        work_order_submission: "[Submit through Building Engines](https://app.buildingengines.com/geofire/login)",
-        common_issues: {},
-      },
-      parking: {},
-      mailroom: {},
-      bike_storage: {},
-    },
-    fees_and_services: {},
-    contractors: {},
-    contact_information: {},
-  }
-}
+// Use the imported data directly
+const knowledgeBase = knowledgeBaseData
 
 // Keyword categories mapped to knowledgeBase sections
 const keywordMapping: Record<string, { keywords: string[]; response: (query: string) => Record<string, any> }> = {

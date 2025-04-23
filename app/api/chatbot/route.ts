@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server"
 import { searchKnowledgeBase, systemPrompt } from "@/utils/openai"
-import { callOpenAI } from "@/utils/openai-server"
 
 export const runtime = "edge" // Use edge runtime to ensure server-side execution
 
@@ -62,10 +61,31 @@ Please use this information to provide a detailed and accurate response. If ther
       })
     }
 
-    // Call OpenAI API using our server-side utility
+    // Call OpenAI API using fetch (compatible with Edge runtime)
     console.log("Calling OpenAI API...")
     try {
-      const responseContent = await callOpenAI(systemPrompt, prompt)
+      const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: prompt },
+          ],
+        }),
+      })
+
+      if (!openaiResponse.ok) {
+        const errorData = await openaiResponse.json().catch(() => ({}))
+        throw new Error(`OpenAI API error: ${openaiResponse.status} ${JSON.stringify(errorData)}`)
+      }
+
+      const data = await openaiResponse.json()
+      const responseContent = data.choices[0]?.message?.content || "Sorry, I couldn't generate a response."
 
       console.log("OpenAI API response received")
 
